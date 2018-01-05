@@ -1,7 +1,5 @@
 This is a bot that delivers cat facts on telegram via [catfact.ninja](https://catfact.ninja/)
 
--
-
 ### Setup
 Firstly, register your own telegram bot and get an API key. Then make a file named `TOKEN.txt` in your cloned directory and paste the key inside.
 
