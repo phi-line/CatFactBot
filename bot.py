@@ -1,11 +1,5 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 import logging
-
-from telegram import InlineQueryResultArticle, InputTextMessageContent
-from telegram.ext import InlineQueryHandler
 
 import requests
 FACT_URL = "https://catfact.ninja/fact"
@@ -26,30 +20,12 @@ def messageFact(bot, update):
         cat_fact = fetchFact()
         cat_fact and update.message.reply_text(cat_fact)
 
-def inlineFact(bot, update):
-    query = update.inline_query.query
-
-    if not query:
-        return
-
+def commandFact(bot, update):
     cat_fact = fetchFact()
-
-    results = list()
-    results.append(
-        InlineQueryResultArticle(
-            id=query.upper(),
-            title='Cat Fact',
-            input_message_content=InputTextMessageContent(cat_fact)
-        )
-    )
-
-    bot.answer_inline_query(update.inline_query.id, results)
-
-
+    cat_fact and bot.send_message(chat_id=update.message.chat_id, text=cat_fact)
 
 def error(bot, update, error):
     logger.warning('Update "%s" caused error "%s"', update, error)
-
 
 def main():
     # Create the EventHandler and pass it your bot's token.
@@ -62,9 +38,8 @@ def main():
     # message listener for catfacts
     dp.add_handler(MessageHandler(Filters.text, messageFact))
 
-    # inline listener for catfacts
-    dp.add_handler(InlineQueryHandler(inlineFact))
-    dp.add_handler(MessageHandler(Filters.text, messageFact))
+    # command listener for catfacts
+    dp.add_handler(CommandHandler('fact', commandFact, pass_args=False))
 
     # log all errors
     dp.add_error_handler(error)
